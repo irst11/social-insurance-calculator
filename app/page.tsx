@@ -1,65 +1,76 @@
-import Image from "next/image";
+import Link from 'next/link'
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+    <main className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-8">
+      <div className="mb-10 text-center">
+        <h1 className="text-3xl font-bold text-gray-800">五险一金计算器</h1>
+        <p className="mt-2 text-gray-500">自动计算公司社保公积金缴纳金额</p>
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-6 w-full max-w-2xl">
+        {/* 数据上传卡片 */}
+        <Link href="/upload" className="flex-1">
+          <div className="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 p-8 cursor-pointer border border-gray-100 hover:border-blue-200 h-full">
+            <div className="flex items-center justify-center w-14 h-14 bg-blue-50 group-hover:bg-blue-100 rounded-xl mb-5 transition-colors">
+              <svg
+                className="w-7 h-7 text-blue-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                />
+              </svg>
+            </div>
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">数据上传</h2>
+            <p className="text-gray-500 text-sm leading-relaxed">
+              上传城市社保标准和员工工资 Excel 文件，并触发计算，将结果写入数据库。
+            </p>
+            <div className="mt-5 flex items-center text-blue-500 text-sm font-medium group-hover:text-blue-600">
+              前往上传
+              <svg className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </div>
+        </Link>
+
+        {/* 结果查询卡片 */}
+        <Link href="/results" className="flex-1">
+          <div className="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 p-8 cursor-pointer border border-gray-100 hover:border-green-200 h-full">
+            <div className="flex items-center justify-center w-14 h-14 bg-green-50 group-hover:bg-green-100 rounded-xl mb-5 transition-colors">
+              <svg
+                className="w-7 h-7 text-green-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+            </div>
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">结果查询</h2>
+            <p className="text-gray-500 text-sm leading-relaxed">
+              查看所有员工的年度月平均工资、缴费基数及公司应缴纳金额明细。
+            </p>
+            <div className="mt-5 flex items-center text-green-500 text-sm font-medium group-hover:text-green-600">
+              前往查询
+              <svg className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </div>
+        </Link>
+      </div>
+    </main>
+  )
 }
