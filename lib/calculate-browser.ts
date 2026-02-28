@@ -8,7 +8,7 @@ interface SalaryRow {
   salary_amount: number
 }
 
-interface ResultRow {
+export interface ResultRow {
   employee_name: string
   avg_salary: number
   contribution_base: number
