@@ -1,32 +1,34 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
 
-// 在模块顶层读取环境变量（Next.js 会在构建时替换 NEXT_PUBLIC_ 变量）
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-
 let supabaseBrowserInstance: SupabaseClient | null = null
+let initPromise: Promise<void> | null = null
 
-// 获取浏览器端 Supabase 客户端
-export function getSupabaseBrowser(): SupabaseClient {
-  if (!supabaseBrowserInstance) {
-    if (!supabaseUrl || !supabaseAnonKey) {
+// 从 API 获取配置并初始化客户端
+async function ensureInitialized(): Promise<void> {
+  if (supabaseBrowserInstance) return
+  if (initPromise) return initPromise
+
+  initPromise = (async () => {
+    const res = await fetch('/api/config')
+    if (!res.ok) {
+      throw new Error('无法获取配置')
+    }
+    const config = await res.json()
+
+    if (!config.supabaseUrl || !config.supabaseAnonKey) {
       throw new Error(
-        `Supabase 环境变量未设置。URL: ${supabaseUrl ? '已设置' : '未设置'}, KEY: ${supabaseAnonKey ? '已设置' : '未设置'}`
+        `Supabase 环境变量未设置。URL: ${config.supabaseUrl ? '已设置' : '未设置'}, KEY: ${config.supabaseAnonKey ? '已设置' : '未设置'}`
       )
     }
-    supabaseBrowserInstance = createClient(supabaseUrl, supabaseAnonKey)
-  }
-  return supabaseBrowserInstance
+
+    supabaseBrowserInstance = createClient(config.supabaseUrl, config.supabaseAnonKey)
+  })()
+
+  return initPromise
 }
 
-// 浏览器端 Supabase 客户端
-export const supabaseBrowser: SupabaseClient = new Proxy({} as SupabaseClient, {
-  get(_, prop) {
-    const client = getSupabaseBrowser()
-    const value = client[prop as keyof SupabaseClient]
-    if (typeof value === 'function') {
-      return value.bind(client)
-    }
-    return value
-  }
-})
+// 获取浏览器端 Supabase 客户端
+export async function getSupabaseBrowser(): Promise<SupabaseClient> {
+  await ensureInitialized()
+  return supabaseBrowserInstance!
+}

@@ -1,4 +1,4 @@
-import { supabaseBrowser } from './supabase-browser'
+import { getSupabaseBrowser } from './supabase-browser'
 
 // 浏览器端计算逻辑（与 lib/calculate.ts 相同，但使用浏览器 Supabase 客户端）
 
@@ -23,10 +23,12 @@ export async function calculateContributionsBrowser(
   cityName: string,
   year: string
 ): Promise<number> {
+  const supabase = await getSupabaseBrowser()
+
   // 1. 获取指定年份的工资数据
   let salaryData, salaryError
   try {
-    const result = await supabaseBrowser
+    const result = await supabase
       .from('salaries')
       .select('employee_name, month, salary_amount')
     salaryData = result.data
@@ -62,7 +64,7 @@ export async function calculateContributionsBrowser(
   }
 
   // 3. 获取城市社保标准（可能有重复记录，取第一条即可）
-  const { data: cityDataArray, error: cityError } = await supabaseBrowser
+  const { data: cityDataArray, error: cityError } = await supabase
     .from('cities')
     .select('base_min, base_max, rate')
     .eq('city_name', cityName)
@@ -96,13 +98,13 @@ export async function calculateContributionsBrowser(
   }
 
   // 5. 清空 results 表并写入新结果
-  const { error: deleteError } = await supabaseBrowser
+  const { error: deleteError } = await supabase
     .from('results')
     .delete()
     .neq('id', 0)
   if (deleteError) throw new Error(`清空旧结果失败: ${deleteError.message}`)
 
-  const { error: insertError } = await supabaseBrowser.from('results').insert(results)
+  const { error: insertError } = await supabase.from('results').insert(results)
   if (insertError) throw new Error(`写入结果失败: ${insertError.message}`)
 
   return results.length
@@ -118,7 +120,8 @@ export async function insertCitiesBrowser(rows: {
   base_max: number
   rate: number
 }[]) {
-  const { error } = await supabaseBrowser.from('cities').insert(rows)
+  const supabase = await getSupabaseBrowser()
+  const { error } = await supabase.from('cities').insert(rows)
   if (error) throw new Error(`插入 cities 失败: [${error.code}] ${error.message}`)
 }
 
@@ -131,7 +134,8 @@ export async function insertSalariesBrowser(rows: {
   month: string
   salary_amount: number
 }[]) {
-  const { error } = await supabaseBrowser.from('salaries').insert(rows)
+  const supabase = await getSupabaseBrowser()
+  const { error } = await supabase.from('salaries').insert(rows)
   if (error) throw new Error(`插入 salaries 失败: [${error.code}] ${error.message}`)
 }
 
@@ -139,7 +143,8 @@ export async function insertSalariesBrowser(rows: {
  * 获取城市列表（用于下拉框）
  */
 export async function fetchCityNamesBrowser(): Promise<string[]> {
-  const { data, error } = await supabaseBrowser.from('cities').select('city_name')
+  const supabase = await getSupabaseBrowser()
+  const { data, error } = await supabase.from('cities').select('city_name')
   if (error) throw new Error(`获取城市列表失败: ${error.message}`)
   return [...new Set((data ?? []).map((r: { city_name: string }) => r.city_name))]
 }
@@ -148,7 +153,8 @@ export async function fetchCityNamesBrowser(): Promise<string[]> {
  * 浏览器端获取计算结果
  */
 export async function fetchResultsBrowser(): Promise<ResultRow[]> {
-  const { data, error } = await supabaseBrowser
+  const supabase = await getSupabaseBrowser()
+  const { data, error } = await supabase
     .from('results')
     .select('employee_name, avg_salary, contribution_base, company_fee')
     .order('employee_name', { ascending: true })
